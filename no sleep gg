@@ -1,0 +1,4 @@
+hours_of_sleep = 6
+
+if hours_of_sleep < 10:
+  print('I'm not waking up for the ceremony')
