@@ -70,19 +70,72 @@ but_cb = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((360, 450), (100
 but_title = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((75, 25), (250, 25)),text='COVID-19 Response Simulation',manager=manager); #Title
 
 #clicked
-clicked = -1
-
-#Main loop of game
+selected=np.array([]);
+selected=selected.astype(int);
+#RUN GAME
 run=True;
 while run:
-    #Basic Settings
-    win.fill((41,42,48)); #Clearing up the screen
-    pygame.time.delay(int(dt*1000)); #Delay between frames
+    
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            run=False;
+
+        manager.process_events(event)
+
+        click = pygame.mouse.get_pressed()
+        if click[2]:
+            print(pygame.mouse.get_pos())
+
+        if click[0]:
+            click_pos = pygame.mouse.get_pos();
+            if 65<=click_pos[0]<=430 and 65<=click_pos[1]<=430:
+                distance_list = [distance(i, click_pos) for i in cluster];
+                selected=np.append(selected, distance_list.index(min(distance_list)));
+            
+        if event.type == pygame.USEREVENT:
+            if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                if event.ui_element == but_iso:
+                    print('Tested!');
+                    money -= 10;
+                    for i in range(n):
+                        pos=cluster[i];
+                        if infected[i]:
+                            pygame.draw.circle(win, (246, 116, 94), (int(pos[0]), int(pos[1])), 10,3);
+                            infected[i]+=incubation;
+        
+        if event.type == pygame.USEREVENT:
+            if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                if event.ui_element == but_qua:
+                    print('Quarantined!');
+                    for i in selected:
+                        cluster=np.delete(cluster, i, axis=0);
+                        infected=np.delete(infected, i, axis=0);
+                        time_count=np.delete(time_count, i, axis=0);
+                        vel=np.delete(vel, i, axis=0);
+                    selected=np.array([]);
+                    selected=selected.astype(int);
+                    money -= 100;
+        
+        if event.type == pygame.USEREVENT:
+            if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                if event.ui_element == but_cb:
+                    if money >= 5000:
+                        print('Lockdown Started!');
+                        money -= 5000;
+                        vel=[[0,0] for i in range(n)];
+                        a = 0;
+                    else:
+                        print('Not enough money!!!')
+                        
+    n=len(cluster);
+                        
+    win.fill((41,42,48));
+    pygame.time.delay(int(dt*1000));
     time_delta = clock.tick(60)/1000.0;
     
-    #Randomising Positions and Infection
     acc=[[random.uniform(-x_acc, x_acc), random.uniform(-y_acc, y_acc)] for i in range(n)];
     acc=np.array(acc);
+    
     
     [x_pos, y_pos]=np.transpose(cluster);
     sorted_x_indices=np.argsort(x_pos);
@@ -121,9 +174,10 @@ while run:
                 time_count_new[i]=0;
     time_count=[time for time in time_count_new];
     
+                
+    
     vel=np.add(vel, acc*dt);
     
-    #Boundary of the Game
     for i in range(n):
         [x_pos, y_pos]=cluster[i];
         if x_pos<x_center-wall_width or x_pos>x_center+wall_width:
@@ -131,55 +185,12 @@ while run:
         if y_pos<y_center-wall_height or y_pos>y_center+wall_height:
             vel[i,1]*=-1;
         
+        
+    
     cluster=np.add(cluster, vel*dt);
     cluster_rounded=np.rint(cluster);
-    
-    #Buttons Action
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            run=False;
 
-        manager.process_events(event)
 
-        click = pygame.mouse.get_pressed()
-        if click[2]== 1:
-            print(pygame.mouse.get_pos())
-
-        if click[0]== 1:
-            click_pos = pygame.mouse.get_pos()
-            distance_list = [distance(i, click_pos) for i in cluster]
-            if min(distance_list) < 30:
-                clicked = distance_list.index(min(distance_list)) #Choosing the person by left click
-            
-        if event.type == pygame.USEREVENT:
-            if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
-                if event.ui_element == but_iso: #Mass Testing button
-                    print('Tested!');
-                    money -= 10;
-                    for i in range(n):
-                           pos=cluster[i];
-                           if infected[i]:
-                               pygame.draw.circle(win, (246, 116, 94), (int(pos[0]), int(pos[1])), 10,3);
-                               infected[i]+=incubation;
-        
-        if event.type == pygame.USEREVENT:
-            if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
-                if event.ui_element == but_qua: #Quarantine button
-                    print('Quarantined!');
-                    money -= 100;
-        
-        if event.type == pygame.USEREVENT:
-            if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
-                if event.ui_element == but_cb: #Lockdown button
-                    if money >= 5000:
-                        print('Lockdown Started!');
-                        money -= 5000;
-                        vel=[[0,0] for i in range(n)];
-                        a = 0; #0 income in lockdown
-                    else:
-                        print('Not enough money!!!')
-
-    #Selecting specific individuals
     manager.update(time_delta)
     manager.draw_ui(win)
 
@@ -191,13 +202,13 @@ while run:
             pygame.draw.circle(win, (180, 209, 164), (int(pos[0]), int(pos[1])), r);
     pygame.draw.rect(win,(200,200,200),(wall_width/2-10,wall_width/2-10,520-wall_width,520-wall_width),3);
 
-    if clicked >= 0:
-        clicked_target = cluster[clicked]
-        pygame.draw.rect(win, (217,237,255), (clicked_target[0] - 20/2,clicked_target[1]-20/2, 20, 20), 2)
+    for i in selected:
+        target=cluster[i];
+        pygame.draw.rect(win, (90,5,238), (target[0] - 20/2,target[1]-20/2, 20, 20), 3)
+    
 
-    #Money Calculation
     but_money = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((350, 25), (80, 25)),text='$'+str(money),manager=manager);
+    
     pygame.display.update();
-    money += 2*a; #Income per frame
+    money += 0*a;
 pygame.quit();
-
