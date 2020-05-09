@@ -30,8 +30,8 @@ x_acc=10; #x-accleration
 y_acc=10; #y-accleration
 
 #Infection Parameters
-r_infection=10; #Infection Probability (proxy for R0)
-p=0.8; #not getting infected
+r_infection=10; #Infection radius (proxy for R0)
+p=0.8; #not getting infected (proxy for R0)
 incubation=70; #Incubation period in frames
 
 #Intiation of Velocity Array
