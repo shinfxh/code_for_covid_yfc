@@ -16,7 +16,6 @@ y_vel=[0 for i in range(n)];
 cluster=[[x_center+random.randrange(-100, 100), y_center+random.randrange(-100, 100)] for i in range(n)];
 money=10000;
 
-
 x_vel=50;
 y_vel=50;
 dt=0.1;
@@ -54,17 +53,13 @@ infected_track=np.array(infected_track);
 min_infection_time=5;
 
 #BUTTONS
-but_iso = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((40, 450), (100, 25)),text='Isolate',manager=manager);
+but_iso = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((40, 450), (100, 25)),text='Testing',manager=manager);
 
 but_qua = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((200, 450), (100, 25)),text='Quarantine',manager=manager);
 
 but_cb = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((360, 450), (100, 25)),text='Lockdown',manager=manager);
 
 but_title = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((75, 25), (250, 25)),text='COVID-19 Response Simulation',manager=manager);
-
-
-
-
 
 
 #RUN GAME
@@ -118,7 +113,7 @@ while run:
         if event.type == pygame.USEREVENT:
             if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
                 if event.ui_element == but_iso:
-                    print('Isolated!');
+                    print('Tested!');
                     money -= 10;
         
         if event.type == pygame.USEREVENT:
@@ -132,6 +127,7 @@ while run:
                 if event.ui_element == but_cb:
                     print('Lockdown Started!');
                     money -= 5000;
+                    vel=[[0,0] for i in range(n)];
 
 
     manager.update(time_delta)

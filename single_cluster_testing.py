@@ -14,7 +14,6 @@ r=5;
 x_vel=[0 for i in range(n)];
 y_vel=[0 for i in range(n)];
 cluster=[[x_center+random.randrange(-100, 100), y_center+random.randrange(-100, 100)] for i in range(n)];
-
 money=10000;
 
 x_vel=50;
@@ -33,14 +32,6 @@ vel=[[random.uniform(-x_vel, x_vel), random.uniform(-y_vel, y_vel)] for i in ran
 cluster=np.array(cluster);
 vel=np.array(vel);
 
-infected=[0 for i in range(n)];
-first_infection=random.randrange(0,n);
-infected[first_infection]=1;
-
-time_count=[0 for i in range(n)];
-min_infection_time=5;
-p=0.8;#not getting infected
-
 import pygame
 import pygame_gui
 pygame.init()
@@ -52,6 +43,14 @@ manager = pygame_gui.UIManager((500,500));
 background = pygame.Surface((500, 500));
 background.fill(pygame.Color('#292a30'));
 
+
+infected=[0 for i in range(n)];
+first_infection=random.randrange(0,n);
+infected[first_infection]=1;
+
+infected_track=[[0 for i in range(n)] for i in range(n)];
+infected_track=np.array(infected_track);
+min_infection_time=5;
 
 #BUTTONS
 but_iso = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((40, 450), (100, 25)),text='Testing',manager=manager);
@@ -73,42 +72,18 @@ while run:
     acc=[[random.uniform(-x_acc, x_acc), random.uniform(-y_acc, y_acc)] for i in range(n)];
     acc=np.array(acc);
     
+    new_infected=[];
     
-    [x_pos, y_pos]=np.transpose(cluster);
-    sorted_x_indices=np.argsort(x_pos);
-    x_sorted=x_pos[sorted_x_indices];
-    indices_reference=np.array([0 for i in range(n)]);
     for i in range(n):
-        index=sorted_x_indices[i];
-        indices_reference[index]=i;
-    
-    time_count_new=[time for time in time_count];
-    for i in range(n):
-        if infected[i]==1:
-            index=indices_reference[i];
-            index_right=index+1;
-            index_left=index-1;
-            while index_right<n and abs(x_sorted[index_right]-x_sorted[i])<r_infection:
-                j=sorted_x_indices[index_right];
-                if distance(cluster[i], cluster[j])<r_infection and infected[j]==0:
-                    time_count_new[j]+=1;
-                index_right+=1;
-            while index_left>=0 and abs(x_sorted[index_left]-x_sorted[i])<r_infection:
-                j=sorted_x_indices[index_left];
-                if distance(cluster[i], cluster[j])<r_infection and infected[j]==0:
-                    time_count_new[j]+=1;
-                index_left-=1;
-                
-    for i in range(n):
-        if time_count_new[i]==time_count[i]:
-            time_count_new[i]=0;
-        elif time_count_new[i]>0:
-            p_infection=1-p**(time_count_new[i]);
-            if random.uniform(0,1)<p_infection:
-                infected[i]=1;
-                time_count_new[i]=0;
-    time_count=[time for time in time_count_new];
-    
+        if infected[i]:
+            for j in range(n):
+                if i!=j:
+                    if distance(cluster[i], cluster[j])<r_infection:
+                        infected_track[i][j]+=1;
+                        if infected_track[i][j]>=min_infection_time:
+                            infected[j]=1;
+                    elif infected_track[i][j]!=0:
+                        infected_track[i][j]=0;
                 
     
     vel=np.add(vel, acc*dt);
@@ -131,8 +106,8 @@ while run:
 
         manager.process_events(event)
 
-        left_click = pygame.mouse.get_pressed()[0]
-        if left_click == 1:
+        right_click = pygame.mouse.get_pressed()[2]
+        if right_click == 1:
             print(pygame.mouse.get_pos())
         
         if event.type == pygame.USEREVENT:
@@ -150,16 +125,22 @@ while run:
                 if event.ui_element == but_qua:
                     print('Quarantined!');
                     money -= 100;
+#                    cluster_int=[];
+#                    for i in range(n):
+#                           pos=cluster[i];
+#                           if infected[i]:
+#                            return
+#                           else:
+#                               np.append(cluster_int,pos);
+#                    cluter=cluster_int;
+#                    n = len(cluster);
         
         if event.type == pygame.USEREVENT:
             if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
                 if event.ui_element == but_cb:
-                    if money >= 5000:
-                        print('Lockdown Started!');
-                        money -= 5000;
-                        vel=[[0,0] for i in range(n)];
-                    else:
-                        print('Not enough money!!!')
+                    print('Lockdown Started!');
+                    money -= 5000;
+                    vel=[[0,0] for i in range(n)];
 
 
     manager.update(time_delta)
@@ -176,6 +157,10 @@ while run:
     but_money = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((350, 25), (80, 25)),text='$'+str(money),manager=manager);
     
     pygame.display.update();
-    money += 10
+    
 pygame.quit();
 
+
+
+#
+                
