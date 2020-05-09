@@ -111,15 +111,18 @@ while run:
         if event.type == pygame.USEREVENT:
             if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
                 if event.ui_element == but_qua: #Quarantine
-                    if money > 100:
+                    selected_length = len(list(dict.fromkeys(selected)))
+                    
+                    if money > selected_length*100:
                         print('Quarantined!');
+                        
                         cluster=np.delete(cluster, selected, axis=0);
                         infected=np.delete(infected, selected, axis=0);
                         time_count=np.delete(time_count, selected, axis=0);
                         vel=np.delete(vel, selected, axis=0);
                         selected=np.array([]);
                         selected=selected.astype(int);
-                        money -= 100;
+                        money -= 100*selected_length;
                     else:
                         print('Not enough money!!!')
         
