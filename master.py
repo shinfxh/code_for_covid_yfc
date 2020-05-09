@@ -14,7 +14,7 @@ r=5;
 x_vel=[0 for i in range(n)];
 y_vel=[0 for i in range(n)];
 cluster=[[x_center+random.randrange(-100, 100), y_center+random.randrange(-100, 100)] for i in range(n)];
-
+money=10000;
 
 x_vel=50;
 y_vel=50;
@@ -53,16 +53,13 @@ infected_track=np.array(infected_track);
 min_infection_time=5;
 
 #BUTTONS
-but_iso = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((20, 450), (100, 25)),text='Isolate',manager=manager);
+but_iso = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((40, 450), (100, 25)),text='Isolate',manager=manager);
 
 but_qua = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((200, 450), (100, 25)),text='Quarantine',manager=manager);
 
-but_cb = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((380, 450), (100, 25)),text='Lockdown',manager=manager);
+but_cb = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((360, 450), (100, 25)),text='Lockdown',manager=manager);
 
-but_title = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((100, 25), (300, 25)),text='COVID-19 Response Simulation',manager=manager);
-
-but_title = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((100, 25), (300, 25)),text='COVID-19 Response Simulation',manager=manager);
-
+but_title = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((75, 25), (250, 25)),text='COVID-19 Response Simulation',manager=manager);
 
 
 #RUN GAME
@@ -70,7 +67,7 @@ run=True;
 while run:
     win.fill((41,42,48));
     pygame.time.delay(int(dt*1000));
-    time_delta = clock.tick(60)/1000.0
+    time_delta = clock.tick(60)/1000.0;
     
     acc=[[random.uniform(-x_acc, x_acc), random.uniform(-y_acc, y_acc)] for i in range(n)];
     acc=np.array(acc);
@@ -116,17 +113,20 @@ while run:
         if event.type == pygame.USEREVENT:
             if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
                 if event.ui_element == but_iso:
-                    print('Isolated!')
+                    print('Isolated!');
+                    money -= 10;
         
         if event.type == pygame.USEREVENT:
             if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
                 if event.ui_element == but_qua:
-                    print('Quarantined!')
+                    print('Quarantined!');
+                    money -= 100;
         
         if event.type == pygame.USEREVENT:
             if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
                 if event.ui_element == but_cb:
-                    print('Lockdown Started!')
+                    print('Lockdown Started!');
+                    money -= 5000;
 
 
     manager.update(time_delta)
@@ -140,6 +140,8 @@ while run:
             pygame.draw.circle(win, (180, 209, 164), (int(pos[0]), int(pos[1])), r);
     pygame.draw.rect(win,(200,200,200),(wall_width/2-10,wall_width/2-10,520-wall_width,520-wall_width),3);
 
+    but_money = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((350, 25), (80, 25)),text='$'+str(money),manager=manager);
+    
     pygame.display.update();
     
 pygame.quit();
