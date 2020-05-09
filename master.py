@@ -113,7 +113,6 @@ while run:
                 if event.ui_element == but_qua: #Quarantine
                     if money > 100:
                         print('Quarantined!');
-                        for i in selected:
                         cluster=np.delete(cluster, selected, axis=0);
                         infected=np.delete(infected, selected, axis=0);
                         time_count=np.delete(time_count, selected, axis=0);
