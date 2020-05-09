@@ -139,6 +139,10 @@ while run:
                 if event.ui_element == but_iso:
                     print('Tested!');
                     money -= 10;
+                    for i in range(n):
+                           pos=cluster[i];
+                           if infected[i]:
+                               pygame.draw.circle(win, (246, 116, 94), (int(pos[0]), int(pos[1])), 10,3);
         
         if event.type == pygame.USEREVENT:
             if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
