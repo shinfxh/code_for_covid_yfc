@@ -10,12 +10,15 @@ cluster=[]; #population
 x_center=250; #Centre x-position
 y_center=250; #Centre y-position
 n=100; #Size of population
+n_init=n #Initial size of population
 wall_width=150; #Boundary x-position
 wall_height=150; #Boundary y-position
 r=5; #Size of the dots
 x_vel=[0 for i in range(n)]; #x-velocity initiation
 y_vel=[0 for i in range(n)]; #y-velocity initiation
 cluster=[[x_center+random.randrange(-100, 100), y_center+random.randrange(-100, 100)] for i in range(n)]; #population initiation
+t = 0
+
 
 #Money Options
 money=100; #Initial money
@@ -32,7 +35,7 @@ y_acc=10; #y-accleration
 #Infection Parameters
 r_infection=30; #Infection radius (proxy for R0)
 p=0.85; #not getting infected (proxy for R0)
-incubation=70; #Incubation period in frames
+incubation=0; #Incubation period in frames
 death_p=0.005; #Death Probability
 death_count=0;
 recover_p=0.1;
@@ -216,10 +219,31 @@ while run:
     cluster=np.add(cluster, vel*dt);
     cluster_rounded=np.rint(cluster);
 
-    #Selecting specific individuals
+    #Draw
     manager.update(time_delta)
+    win.blit(background, (0,0))
+    
+    #Additional_buttons
+    element_list = []
+    infected_no = len([i for i in infected if i > incubation])
+
+    but_qua = pygame_gui.elements.UIButton(relative_rect = pygame.Rect((440-222, 440-39), (219, 35)), text= 'Quarantined:' + str(69), manager = manager)
+    element_list.append(but_qua)
+    but_death = pygame_gui.elements.UIButton(relative_rect = pygame.Rect((65, 440-39), (159, 35)), text = 'Dead:' + str(n_init-n), manager = manager)
+    element_list.append(but_death)
+
+    but_infected = pygame_gui.elements.UIButton(relative_rect = pygame.Rect((437, 128), (62, 35)), text = '  : '+str(infected_no), manager = manager)
+    element_list.append(but_infected)
+    but_healthy = pygame_gui.elements.UIButton(relative_rect = pygame.Rect((437, 168), (62, 35)), text = '  : '+str(n-infected_no), manager = manager)
+    element_list.append(but_healthy)
+
+    #Updating the money
+    but_money = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((350, 25), (80, 25)),text='$'+str(money),manager=manager);
+    element_list.append(but_money)
+
     manager.draw_ui(win)
 
+    #draw people
     for i in range(n):
         pos=cluster[i];
         if infected[i]>incubation:
@@ -232,20 +256,13 @@ while run:
         target=cluster[i];
         pygame.draw.rect(win, (28,196,227), (target[0] - 20/2,target[1]-20/2, 20, 20), 3)
         
-    #Textbox
-    #box_qua = pygame_gui.elements.UITextBox(html_text =  '     Quarantined: 69', relative_rect = pygame.Rect((440-222, 440-39), (219, 35)), manager = manager)
-    #box_death = pygame_gui.elements.UITextBox(html_text =  '     Dead: 69', relative_rect = pygame.Rect((65, 440-39), (159, 35)), manager = manager)
+    #draw textbox dot
+    pygame.draw.circle(win, (246, 116, 94), (450, 146), r)
+    pygame.draw.circle(win, (180, 209, 164), (450, 186), r)
 
-    #infected_no = len([i for i in infected if i >= incubation])
-    #pygame.draw.circle(win, (246, 116, 94), (455, 196), r)
-    #box_infected = pygame_gui.elements.UITextBox(html_text =  '  :{}'.format(infected_no), relative_rect = pygame.Rect((438, 178), (55, 35)), manager = manager)
-
-    #Updating the money
-    but_money = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((350, 25), (80, 25)),text='$'+str(money),manager=manager);
     
-    pygame.display.update();
     
-    money += 10*a; #Income per frame
+    
     
     selected_new=np.array([]);
     for i in range(len(selected)):
@@ -260,5 +277,16 @@ while run:
     time_count=np.delete(time_count, die, axis=0);
     infected=np.delete(infected, die, axis=0);
     n=len(cluster);
+
+
     
+    pygame.display.update();
+
+    #kill elements
+    for i in element_list:
+        i.kill()
+
+
+    t = t + 1
+    money += 10*a; #Income per frame
 pygame.quit();
