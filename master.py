@@ -53,7 +53,7 @@ infected_track=np.array(infected_track);
 min_infection_time=5;
 
 #BUTTONS
-but_iso = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((40, 450), (100, 25)),text='Isolate',manager=manager);
+but_iso = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((40, 450), (100, 25)),text='Testing',manager=manager);
 
 but_qua = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((200, 450), (100, 25)),text='Quarantine',manager=manager);
 
@@ -113,7 +113,7 @@ while run:
         if event.type == pygame.USEREVENT:
             if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
                 if event.ui_element == but_iso:
-                    print('Isolated!');
+                    print('Tested!');
                     money -= 10;
         
         if event.type == pygame.USEREVENT:
@@ -127,6 +127,7 @@ while run:
                 if event.ui_element == but_cb:
                     print('Lockdown Started!');
                     money -= 5000;
+                    vel=[[0,0] for i in range(n)];
 
 
     manager.update(time_delta)
