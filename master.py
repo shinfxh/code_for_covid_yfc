@@ -52,12 +52,12 @@ import pygame
 import pygame_gui
 pygame.init()
 
-win = pygame.display.set_mode((500,500));
+win = pygame.display.set_mode((500,500)); #Background surface size
 clock = pygame.time.Clock();
 manager = pygame_gui.UIManager((500,500));
 
 background = pygame.Surface((500, 500));
-background.fill(pygame.Color('#292a30'));
+background.fill(pygame.Color('#292a30')); #Colour of background
 
 
 #Buttons
@@ -76,8 +76,8 @@ clicked = -1
 run=True;
 while run:
     #Basic Settings
-    win.fill((41,42,48));
-    pygame.time.delay(int(dt*1000));
+    win.fill((41,42,48)); #Clearing up the screen
+    pygame.time.delay(int(dt*1000)); #Delay between frames
     time_delta = clock.tick(60)/1000.0;
     
     #Randomising Positions and Infection
@@ -149,11 +149,11 @@ while run:
             click_pos = pygame.mouse.get_pos()
             distance_list = [distance(i, click_pos) for i in cluster]
             if min(distance_list) < 30:
-                clicked = distance_list.index(min(distance_list))
+                clicked = distance_list.index(min(distance_list)) #Choosing the person by left click
             
         if event.type == pygame.USEREVENT:
             if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
-                if event.ui_element == but_iso: #Mass Testing
+                if event.ui_element == but_iso: #Mass Testing button
                     print('Tested!');
                     money -= 10;
                     for i in range(n):
@@ -164,18 +164,18 @@ while run:
         
         if event.type == pygame.USEREVENT:
             if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
-                if event.ui_element == but_qua: #Quarantine
+                if event.ui_element == but_qua: #Quarantine button
                     print('Quarantined!');
                     money -= 100;
         
         if event.type == pygame.USEREVENT:
             if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
-                if event.ui_element == but_cb: #Lockdown
+                if event.ui_element == but_cb: #Lockdown button
                     if money >= 5000:
                         print('Lockdown Started!');
                         money -= 5000;
                         vel=[[0,0] for i in range(n)];
-                        a = 0;
+                        a = 0; #0 income in lockdown
                     else:
                         print('Not enough money!!!')
 
@@ -198,6 +198,6 @@ while run:
     #Money Calculation
     but_money = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((350, 25), (80, 25)),text='$'+str(money),manager=manager);
     pygame.display.update();
-    money += 2*a;
+    money += 2*a; #Income per frame
 pygame.quit();
 
