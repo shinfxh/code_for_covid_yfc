@@ -107,8 +107,8 @@ while run:
 
         manager.process_events(event)
 
-        right_click = pygame.mouse.get_pressed()[2]
-        if right_click == 1:
+        left_click = pygame.mouse.get_pressed()[0]
+        if left_click == 1:
             print(pygame.mouse.get_pos())
         
         if event.type == pygame.USEREVENT:
