@@ -18,7 +18,7 @@ y_vel=[0 for i in range(n)]; #y-velocity initiation
 cluster=[[x_center+random.randrange(-100, 100), y_center+random.randrange(-100, 100)] for i in range(n)]; #population initiation
 
 #Money Options
-money=10000; #Initial money
+money=100; #Initial money
 a=1; #If lockdown is carried out
 
 #Calculation of Positions
@@ -97,26 +97,32 @@ while run:
         if event.type == pygame.USEREVENT:
             if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
                 if event.ui_element == but_iso: #Mass Testing
-                    print('Tested!');
-                    money -= 10;
-                    for i in range(n):
-                        pos=cluster[i];
-                        if infected[i]:
-                            pygame.draw.circle(win, (246, 116, 94), (int(pos[0]), int(pos[1])), 10,3);
-                            infected[i]+=incubation;
+                    if money > 500:
+                        print('Tested!');
+                        money -= 500;
+                        for i in range(n):
+                            pos=cluster[i];
+                            if infected[i]:
+                                target=cluster[i];
+                                infected[i]+=incubation;
+                    else:
+                        print('Not enough money!!!')
         
         if event.type == pygame.USEREVENT:
             if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
                 if event.ui_element == but_qua: #Quarantine
-                    print('Quarantined!');
-                    for i in selected:
-                        cluster=np.delete(cluster, i, axis=0);
-                        infected=np.delete(infected, i, axis=0);
-                        time_count=np.delete(time_count, i, axis=0);
-                        vel=np.delete(vel, i, axis=0);
-                    selected=np.array([]);
-                    selected=selected.astype(int);
-                    money -= 100;
+                    if money > 100:
+                        print('Quarantined!');
+                        for i in selected:
+                            cluster=np.delete(cluster, i, axis=0);
+                            infected=np.delete(infected, i, axis=0);
+                            time_count=np.delete(time_count, i, axis=0);
+                            vel=np.delete(vel, i, axis=0);
+                        selected=np.array([]);
+                        selected=selected.astype(int);
+                        money -= 100;
+                    else:
+                        print('Not enough money!!!')
         
         if event.type == pygame.USEREVENT:
             if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
@@ -205,12 +211,12 @@ while run:
 
     for i in selected:
         target=cluster[i];
-        pygame.draw.rect(win, (90,5,238), (target[0] - 20/2,target[1]-20/2, 20, 20), 3)
+        pygame.draw.rect(win, (28,196,227), (target[0] - 20/2,target[1]-20/2, 20, 20), 3)
 
     #Updating the money
     but_money = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((350, 25), (80, 25)),text='$'+str(money),manager=manager);
     
     pygame.display.update();
     
-    money += 0*a; #Income per frame
+    money += 10*a; #Income per frame
 pygame.quit();
