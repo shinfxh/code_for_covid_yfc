@@ -189,11 +189,11 @@ while run:
 
     if clicked >= 0:
         clicked_target = cluster[clicked]
-        pygame.draw.rect(win, (90,5,238), (clicked_target[0] - 20/2,clicked_target[1]-20/2, 20, 20), 3)
+        pygame.draw.rect(win, (64,130,212), (clicked_target[0] - 20/2,clicked_target[1]-20/2, 20, 20), 2)
 
     but_money = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((350, 25), (80, 25)),text='$'+str(money),manager=manager);
     
     pygame.display.update();
-    money += 10*a;
+    money += 2*a;
 pygame.quit();
 
