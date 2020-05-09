@@ -114,10 +114,10 @@ while run:
                     if money > 100:
                         print('Quarantined!');
                         for i in selected:
-                            cluster=np.delete(cluster, i, axis=0);
-                            infected=np.delete(infected, i, axis=0);
-                            time_count=np.delete(time_count, i, axis=0);
-                            vel=np.delete(vel, i, axis=0);
+                        cluster=np.delete(cluster, selected, axis=0);
+                        infected=np.delete(infected, selected, axis=0);
+                        time_count=np.delete(time_count, selected, axis=0);
+                        vel=np.delete(vel, selected, axis=0);
                         selected=np.array([]);
                         selected=selected.astype(int);
                         money -= 100;
