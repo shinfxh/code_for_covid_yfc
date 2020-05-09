@@ -52,6 +52,8 @@ infected_track=[[0 for i in range(n)] for i in range(n)];
 infected_track=np.array(infected_track);
 min_infection_time=5;
 
+selected = [0 for i in range(n)]
+
 #BUTTONS
 but_iso = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((40, 450), (100, 25)),text='Testing',manager=manager);
 
@@ -61,6 +63,7 @@ but_cb = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((360, 450), (100
 
 but_title = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((75, 25), (250, 25)),text='COVID-19 Response Simulation',manager=manager);
 
+clicked = -1
 
 #RUN GAME
 run=True;
@@ -73,6 +76,8 @@ while run:
     acc=np.array(acc);
     
     new_infected=[];
+
+    
     
     for i in range(n):
         if infected[i]:
@@ -106,10 +111,17 @@ while run:
 
         manager.process_events(event)
 
-        right_click = pygame.mouse.get_pressed()[2]
-        if right_click == 1:
+        click = pygame.mouse.get_pressed()
+        if click[2]== 1:
             print(pygame.mouse.get_pos())
-        
+
+        if click[0]== 1:
+            click_pos = pygame.mouse.get_pos()
+            distance_list = [distance(i, click_pos) for i in cluster]
+            clicked = distance_list.index(min(distance_list))
+            
+            
+
         if event.type == pygame.USEREVENT:
             if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
                 if event.ui_element == but_iso:
@@ -153,6 +165,10 @@ while run:
         else:
             pygame.draw.circle(win, (180, 209, 164), (int(pos[0]), int(pos[1])), r);
     pygame.draw.rect(win,(200,200,200),(wall_width/2-10,wall_width/2-10,520-wall_width,520-wall_width),3);
+    
+    if clicked >= 0:
+        clicked_target = cluster[clicked]
+        pygame.draw.rect(win, (90,5,238), (clicked_target[0] - 20/2,clicked_target[1]-20/2, 20, 20), 3)
 
     but_money = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((350, 25), (80, 25)),text='$'+str(money),manager=manager);
     
