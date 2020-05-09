@@ -30,7 +30,7 @@ y_bias=10;
 
 r_infection=10;
 
-incubation=30;
+incubation=70;
 
 vel=[[random.uniform(-x_vel, x_vel), random.uniform(-y_vel, y_vel)] for i in range(n)];
 cluster=np.array(cluster);
