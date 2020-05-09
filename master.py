@@ -69,6 +69,9 @@ but_cb = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((360, 450), (100
 
 but_title = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((75, 25), (250, 25)),text='COVID-19 Response Simulation',manager=manager); #Title
 
+#Textbox
+box_qua = pygame_gui.elements.UITextBox(html_text =  '     Quarantined: 69', relative_rect = pygame.Rect((440-222, 440-39), (219, 35)), manager = manager)
+box_death = pygame_gui.elements.UITextBox(html_text =  '     Dead: 69', relative_rect = pygame.Rect((65, 440-39), (159, 35)), manager = manager)
 #clicked
 selected=np.array([]);
 selected=selected.astype(int);
@@ -196,7 +199,7 @@ while run:
         [x_pos, y_pos]=cluster[i];
         if x_pos<x_center-wall_width or x_pos>x_center+wall_width:
             vel[i,0]*=-1;
-        if y_pos<y_center-wall_height or y_pos>y_center+wall_height:
+        if y_pos<y_center-wall_height or y_pos>y_center+wall_height-10:
             vel[i,1]*=-1;
         
 
@@ -216,6 +219,15 @@ while run:
     for i in selected:
         target=cluster[i];
         pygame.draw.rect(win, (28,196,227), (target[0] - 20/2,target[1]-20/2, 20, 20), 3)
+
+
+    #Textbox
+    box_qua = pygame_gui.elements.UITextBox(html_text =  '     Quarantined: 69', relative_rect = pygame.Rect((440-222, 440-39), (219, 35)), manager = manager)
+    box_death = pygame_gui.elements.UITextBox(html_text =  '     Dead: 69', relative_rect = pygame.Rect((65, 440-39), (159, 35)), manager = manager)
+
+    infected_no = len([i for i in infected if i > 0])
+    pygame.draw.circle(win, (246, 116, 94), (469, 178), r)
+    
 
     #Updating the money
     but_money = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((350, 25), (80, 25)),text='$'+str(money),manager=manager);
