@@ -225,8 +225,10 @@ while run:
     box_qua = pygame_gui.elements.UITextBox(html_text =  '     Quarantined: 69', relative_rect = pygame.Rect((440-222, 440-39), (219, 35)), manager = manager)
     box_death = pygame_gui.elements.UITextBox(html_text =  '     Dead: 69', relative_rect = pygame.Rect((65, 440-39), (159, 35)), manager = manager)
 
-    infected_no = len([i for i in infected if i > 0])
-    pygame.draw.circle(win, (246, 116, 94), (469, 178), r)
+    infected_no = len([i for i in infected if i >= incubation])
+    pygame.draw.circle(win, (246, 116, 94), (455, 196), r)
+    box_infected = pygame_gui.elements.UITextBox(html_text =  '  :{}'.format(infected_no), relative_rect = pygame.Rect((438, 178), (55, 35)), manager = manager)
+
     
 
     #Updating the money
