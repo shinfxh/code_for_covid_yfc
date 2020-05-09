@@ -30,6 +30,8 @@ y_bias=10;
 
 r_infection=10;
 
+incubation=30;
+
 vel=[[random.uniform(-x_vel, x_vel), random.uniform(-y_vel, y_vel)] for i in range(n)];
 cluster=np.array(cluster);
 vel=np.array(vel);
@@ -147,6 +149,7 @@ while run:
                            pos=cluster[i];
                            if infected[i]:
                                pygame.draw.circle(win, (246, 116, 94), (int(pos[0]), int(pos[1])), 10,3);
+                               infected[i]+=incubation;
         
         if event.type == pygame.USEREVENT:
             if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
@@ -171,7 +174,7 @@ while run:
 
     for i in range(n):
         pos=cluster[i];
-        if infected[i]>30:
+        if infected[i]>incubation:
             pygame.draw.circle(win, (246, 116, 94), (int(pos[0]), int(pos[1])), r);
         else:
             pygame.draw.circle(win, (180, 209, 164), (int(pos[0]), int(pos[1])), r);
