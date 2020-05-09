@@ -30,7 +30,7 @@ x_acc=10; #x-accleration
 y_acc=10; #y-accleration
 
 #Infection Parameters
-r_infection=10; #Infection radius (proxy for R0)
+r_infection=20; #Infection radius (proxy for R0)
 p=0.8; #not getting infected (proxy for R0)
 incubation=70; #Incubation period in frames
 
@@ -222,7 +222,7 @@ while run:
     
     cluster=np.add(cluster, vel*dt);
     cluster_rounded=np.rint(cluster);  
-    
+
     pygame.display.update();
     
     money += 10*a; #Income per frame
