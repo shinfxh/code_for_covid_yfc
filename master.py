@@ -144,7 +144,8 @@ while run:
         if click[0]== 1:
             click_pos = pygame.mouse.get_pos()
             distance_list = [distance(i, click_pos) for i in cluster]
-            clicked = distance_list.index(min(distance_list))
+            if min(distance_list) < 30:
+                clicked = distance_list.index(min(distance_list))
             
         if event.type == pygame.USEREVENT:
             if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
