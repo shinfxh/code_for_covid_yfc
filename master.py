@@ -76,6 +76,12 @@ selected=selected.astype(int);
 ##Main loop of game
 run=True;
 while run:
+    #Basic settings
+    win.fill((41,42,48));
+    pygame.time.delay(int(dt*1000));
+    time_delta = clock.tick(60)/1000.0;
+    
+
     #Buttons Actions
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -104,6 +110,7 @@ while run:
                             pos=cluster[i];
                             if infected[i]:
                                 target=cluster[i];
+                                pygame.draw.circle(win, (246, 116, 94), (int(pos[0]), int(pos[1])), 10,2);
                                 infected[i]+=incubation;
                     else:
                         print('Not enough money!!!')
@@ -139,10 +146,6 @@ while run:
                         
     n=len(cluster);
                         
-    #Basic settings
-    win.fill((41,42,48));
-    pygame.time.delay(int(dt*1000));
-    time_delta = clock.tick(60)/1000.0;
     
     #Randomising Positions and Infection
     acc=[[random.uniform(-x_acc, x_acc), random.uniform(-y_acc, y_acc)] for i in range(n)];
@@ -196,8 +199,7 @@ while run:
         if y_pos<y_center-wall_height or y_pos>y_center+wall_height:
             vel[i,1]*=-1;
         
-    cluster=np.add(cluster, vel*dt);
-    cluster_rounded=np.rint(cluster);
+
 
     #Selecting specific individuals
     manager.update(time_delta)
@@ -217,6 +219,9 @@ while run:
 
     #Updating the money
     but_money = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((350, 25), (80, 25)),text='$'+str(money),manager=manager);
+    
+    cluster=np.add(cluster, vel*dt);
+    cluster_rounded=np.rint(cluster);  
     
     pygame.display.update();
     
