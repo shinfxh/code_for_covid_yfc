@@ -1,49 +1,53 @@
+#Calculation of Distance
 def distance(pos_1, pos_2):
     return sqrt(sum((pos_1-pos_2)**2));
     
+#Declaration of Basic Parameters
 import random;
 import numpy as np;
 from math import *;
-cluster=[];
-x_center=250;
-y_center=250;
-n=100;
-wall_width=150;
-wall_height=150;
-r=5;
-x_vel=[0 for i in range(n)];
-y_vel=[0 for i in range(n)];
-cluster=[[x_center+random.randrange(-100, 100), y_center+random.randrange(-100, 100)] for i in range(n)];
+cluster=[]; #population
+x_center=250; #Centre x-position
+y_center=250; #Centre y-position
+n=100; #Size of population
+wall_width=150; #Boundary x-position
+wall_height=150; #Boundary y-position
+r=5; #Size of the dots
+x_vel=[0 for i in range(n)]; #x-velocity initiation
+y_vel=[0 for i in range(n)]; #y-velocity initiation
+cluster=[[x_center+random.randrange(-100, 100), y_center+random.randrange(-100, 100)] for i in range(n)]; #population initiation
 
-money=10000;
-a=1;
+#Money Options
+money=10000; #Initial money
+a=1; #If lockdown is carried out
 
-x_vel=50;
-y_vel=50;
-dt=0.1;
+#Calculation of Positions
+x_vel=50; #x-velocity
+y_vel=50; #y-velocity
+dt=0.1; #Time interval
 
-x_acc=10;
-y_acc=10;
+x_acc=10; #x-accleration
+y_acc=10; #y-accleration
 
-x_bias=10;
-y_bias=10;
+#Infection Parameters
+r_infection=10; #Infection Probability (proxy for R0)
+incubation=70; #Incubation period in frames
 
-r_infection=10;
-
-incubation=70;
-
-vel=[[random.uniform(-x_vel, x_vel), random.uniform(-y_vel, y_vel)] for i in range(n)];
+#Intiation of Velocity Array
+vel=[[random.uniform(-x_vel, x_vel), random.uniform(-y_vel, y_vel)] for i in range(n)]; 
 cluster=np.array(cluster);
 vel=np.array(vel);
 
+#Transmission Mechanism
 infected=[0 for i in range(n)];
 first_infection=random.randrange(0,n);
 infected[first_infection]=1;
 
 time_count=[0 for i in range(n)];
 min_infection_time=5;
-p=0.8;#not getting infected
+p=0.8; #not getting infected
 
+#PyGame Initiation
 import pygame
 import pygame_gui
 pygame.init()
@@ -56,27 +60,29 @@ background = pygame.Surface((500, 500));
 background.fill(pygame.Color('#292a30'));
 
 
-#BUTTONS
-but_iso = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((40, 450), (100, 25)),text='Testing',manager=manager);
+#Buttons
+but_iso = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((40, 450), (100, 25)),text='Testing',manager=manager); #Testing
 
-but_qua = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((200, 450), (100, 25)),text='Quarantine',manager=manager);
+but_qua = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((200, 450), (100, 25)),text='Quarantine',manager=manager); #Quarantine
 
-but_cb = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((360, 450), (100, 25)),text='Lockdown',manager=manager);
+but_cb = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((360, 450), (100, 25)),text='Lockdown',manager=manager); #Lockdown
 
-but_title = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((75, 25), (250, 25)),text='COVID-19 Response Simulation',manager=manager);
+but_title = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((75, 25), (250, 25)),text='COVID-19 Response Simulation',manager=manager); #Title
 
 #clicked
 clicked = -1
-#RUN GAME
+
+#Main loop of game
 run=True;
 while run:
+    #Basic Settings
     win.fill((41,42,48));
     pygame.time.delay(int(dt*1000));
     time_delta = clock.tick(60)/1000.0;
     
+    #Randomising Positions and Infection
     acc=[[random.uniform(-x_acc, x_acc), random.uniform(-y_acc, y_acc)] for i in range(n)];
     acc=np.array(acc);
-    
     
     [x_pos, y_pos]=np.transpose(cluster);
     sorted_x_indices=np.argsort(x_pos);
@@ -115,10 +121,9 @@ while run:
                 time_count_new[i]=0;
     time_count=[time for time in time_count_new];
     
-                
-    
     vel=np.add(vel, acc*dt);
     
+    #Boundary of the Game
     for i in range(n):
         [x_pos, y_pos]=cluster[i];
         if x_pos<x_center-wall_width or x_pos>x_center+wall_width:
@@ -126,11 +131,10 @@ while run:
         if y_pos<y_center-wall_height or y_pos>y_center+wall_height:
             vel[i,1]*=-1;
         
-        
-    
     cluster=np.add(cluster, vel*dt);
     cluster_rounded=np.rint(cluster);
     
+    #Buttons Action
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run=False;
@@ -149,7 +153,7 @@ while run:
             
         if event.type == pygame.USEREVENT:
             if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
-                if event.ui_element == but_iso:
+                if event.ui_element == but_iso: #Mass Testing
                     print('Tested!');
                     money -= 10;
                     for i in range(n):
@@ -160,13 +164,13 @@ while run:
         
         if event.type == pygame.USEREVENT:
             if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
-                if event.ui_element == but_qua:
+                if event.ui_element == but_qua: #Quarantine
                     print('Quarantined!');
                     money -= 100;
         
         if event.type == pygame.USEREVENT:
             if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
-                if event.ui_element == but_cb:
+                if event.ui_element == but_cb: #Lockdown
                     if money >= 5000:
                         print('Lockdown Started!');
                         money -= 5000;
@@ -175,7 +179,7 @@ while run:
                     else:
                         print('Not enough money!!!')
 
-
+    #Selecting specific individuals
     manager.update(time_delta)
     manager.draw_ui(win)
 
@@ -191,8 +195,8 @@ while run:
         clicked_target = cluster[clicked]
         pygame.draw.rect(win, (217,237,255), (clicked_target[0] - 20/2,clicked_target[1]-20/2, 20, 20), 2)
 
+    #Money Calculation
     but_money = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((350, 25), (80, 25)),text='$'+str(money),manager=manager);
-    
     pygame.display.update();
     money += 2*a;
 pygame.quit();
