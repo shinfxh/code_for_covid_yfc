@@ -32,6 +32,14 @@ vel=[[random.uniform(-x_vel, x_vel), random.uniform(-y_vel, y_vel)] for i in ran
 cluster=np.array(cluster);
 vel=np.array(vel);
 
+infected=[0 for i in range(n)];
+first_infection=random.randrange(0,n);
+infected[first_infection]=1;
+
+time_count=[0 for i in range(n)];
+min_infection_time=5;
+p=0.8;#not getting infected
+
 import pygame
 import pygame_gui
 pygame.init()
@@ -43,14 +51,6 @@ manager = pygame_gui.UIManager((500,500));
 background = pygame.Surface((500, 500));
 background.fill(pygame.Color('#292a30'));
 
-
-infected=[0 for i in range(n)];
-first_infection=random.randrange(0,n);
-infected[first_infection]=1;
-
-infected_track=[[0 for i in range(n)] for i in range(n)];
-infected_track=np.array(infected_track);
-min_infection_time=5;
 
 #BUTTONS
 but_iso = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((40, 450), (100, 25)),text='Testing',manager=manager);
@@ -72,18 +72,42 @@ while run:
     acc=[[random.uniform(-x_acc, x_acc), random.uniform(-y_acc, y_acc)] for i in range(n)];
     acc=np.array(acc);
     
-    new_infected=[];
     
+    [x_pos, y_pos]=np.transpose(cluster);
+    sorted_x_indices=np.argsort(x_pos);
+    x_sorted=x_pos[sorted_x_indices];
+    indices_reference=np.array([0 for i in range(n)]);
     for i in range(n):
-        if infected[i]:
-            for j in range(n):
-                if i!=j:
-                    if distance(cluster[i], cluster[j])<r_infection:
-                        infected_track[i][j]+=1;
-                        if infected_track[i][j]>=min_infection_time:
-                            infected[j]=1;
-                    elif infected_track[i][j]!=0:
-                        infected_track[i][j]=0;
+        index=sorted_x_indices[i];
+        indices_reference[index]=i;
+    
+    time_count_new=[time for time in time_count];
+    for i in range(n):
+        if infected[i]==1:
+            index=indices_reference[i];
+            index_right=index+1;
+            index_left=index-1;
+            while index_right<n and abs(x_sorted[index_right]-x_sorted[i])<r_infection:
+                j=sorted_x_indices[index_right];
+                if distance(cluster[i], cluster[j])<r_infection and infected[j]==0:
+                    time_count_new[j]+=1;
+                index_right+=1;
+            while index_left>=0 and abs(x_sorted[index_left]-x_sorted[i])<r_infection:
+                j=sorted_x_indices[index_left];
+                if distance(cluster[i], cluster[j])<r_infection and infected[j]==0:
+                    time_count_new[j]+=1;
+                index_left-=1;
+                
+    for i in range(n):
+        if time_count_new[i]==time_count[i]:
+            time_count_new[i]=0;
+        elif time_count_new[i]>0:
+            p_infection=1-p**(time_count_new[i]);
+            if random.uniform(0,1)<p_infection:
+                infected[i]=1;
+                time_count_new[i]=0;
+    time_count=[time for time in time_count_new];
+    
                 
     
     vel=np.add(vel, acc*dt);
