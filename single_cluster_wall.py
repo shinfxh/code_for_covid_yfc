@@ -44,9 +44,9 @@ while run:
     
     for i in range(n):
         [x_pos, y_pos]=cluster[i];
-        if x_pos<0 or x_pos>500:
+        if x_pos<50 or x_pos>450:
             vel[i,0]*=-1;
-        if y_pos<0 or y_pos>500:
+        if y_pos<50 or y_pos>450:
             vel[i,1]*=-1;
         
         
