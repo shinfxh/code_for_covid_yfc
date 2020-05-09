@@ -126,7 +126,7 @@ while run:
         if event.type == pygame.USEREVENT:
             if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
                 if event.ui_element == but_cb:
-                    if money > 5000:
+                    if money >= 5000:
                         print('Lockdown Started!');
                         money -= 5000;
                         vel=[[0,0] for i in range(n)];
