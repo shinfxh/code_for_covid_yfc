@@ -96,7 +96,7 @@ while run:
             pygame.draw.circle(win, (246, 116, 94), (int(pos[0]), int(pos[1])), r);
         else:
             pygame.draw.circle(win, (180, 209, 164), (int(pos[0]), int(pos[1])), r);
-    pygame.draw.rect(win,(200,200,200),(wall_width/2-10,wall_width/2-10,520-wall_width,520-wall_width),width=3);
+    pygame.draw.rect(win,(200,200,200),(wall_width/2-10,wall_width/2-10,520-wall_width,520-wall_width),3);
 
     pygame.display.update();
     
