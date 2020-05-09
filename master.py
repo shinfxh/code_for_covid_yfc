@@ -76,72 +76,11 @@ selected=selected.astype(int);
 ##Main loop of game
 run=True;
 while run:
-    #Buttons Actions
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            run=False;
-
-        manager.process_events(event)
-        
-        #Get mouse position
-        click = pygame.mouse.get_pressed()
-        if click[2]:
-            print(pygame.mouse.get_pos())
-
-        if click[0]:
-            click_pos = pygame.mouse.get_pos();
-            if 65<=click_pos[0]<=430 and 65<=click_pos[1]<=430:
-                distance_list = [distance(i, click_pos) for i in cluster];
-                selected=np.append(selected, distance_list.index(min(distance_list))); #Select specific individuals
-            
-        if event.type == pygame.USEREVENT:
-            if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
-                if event.ui_element == but_iso: #Mass Testing
-                    if money > 500:
-                        print('Tested!');
-                        money -= 500;
-                        for i in range(n):
-                            pos=cluster[i];
-                            if infected[i]:
-                                target=cluster[i];
-                                infected[i]+=incubation;
-                    else:
-                        print('Not enough money!!!')
-        
-        if event.type == pygame.USEREVENT:
-            if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
-                if event.ui_element == but_qua: #Quarantine
-                    if money > 100:
-                        print('Quarantined!');
-                        for i in selected:
-                        cluster=np.delete(cluster, selected, axis=0);
-                        infected=np.delete(infected, selected, axis=0);
-                        time_count=np.delete(time_count, selected, axis=0);
-                        vel=np.delete(vel, selected, axis=0);
-                        selected=np.array([]);
-                        selected=selected.astype(int);
-                        money -= 100;
-                    else:
-                        print('Not enough money!!!')
-        
-        if event.type == pygame.USEREVENT:
-            if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
-                if event.ui_element == but_cb: #Lockdown
-                    if money >= 5000:
-                        print('Lockdown Started!');
-                        money -= 5000;
-                        vel=[[0,0] for i in range(n)];
-                        a = 0; #Lockdown: loss of income
-                    else:
-                        print('Not enough money!!!')
-                        
-    n=len(cluster);
-                        
     #Basic settings
     win.fill((41,42,48));
     pygame.time.delay(int(dt*1000));
     time_delta = clock.tick(60)/1000.0;
-    
+                        
     #Randomising Positions and Infection
     acc=[[random.uniform(-x_acc, x_acc), random.uniform(-y_acc, y_acc)] for i in range(n)];
     acc=np.array(acc);
@@ -215,6 +154,65 @@ while run:
 
     #Updating the money
     but_money = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((350, 25), (80, 25)),text='$'+str(money),manager=manager);
+    
+    #Buttons Actions
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            run=False;
+
+        manager.process_events(event)
+        
+        #Get mouse position
+        click = pygame.mouse.get_pressed()
+        if click[2]:
+            print(pygame.mouse.get_pos())
+
+        if click[0]:
+            click_pos = pygame.mouse.get_pos();
+            if 65<=click_pos[0]<=430 and 65<=click_pos[1]<=430:
+                distance_list = [distance(i, click_pos) for i in cluster];
+                selected=np.append(selected, distance_list.index(min(distance_list))); #Select specific individuals
+            
+        if event.type == pygame.USEREVENT:
+            if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                if event.ui_element == but_iso: #Mass Testing
+                    if money > 500:
+                        print('Tested!');
+                        money -= 500;
+                        for i in range(n):
+                            pos=cluster[i];
+                            if infected[i]:
+                                target=cluster[i];
+                                infected[i]+=incubation;
+                    else:
+                        print('Not enough money!!!')
+        
+        if event.type == pygame.USEREVENT:
+            if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                if event.ui_element == but_qua: #Quarantine
+                    if money > 100:
+                        print('Quarantined!');
+                        for i in selected:
+                            cluster=np.delete(cluster, selected, axis=0);
+                            infected=np.delete(infected, selected, axis=0);
+                            time_count=np.delete(time_count, selected, axis=0);
+                            vel=np.delete(vel, selected, axis=0);
+                            selected=np.array([]);
+                            selected=selected.astype(int);
+                            money -= 100;
+                    else:
+                        print('Not enough money!!!')
+        
+        if event.type == pygame.USEREVENT:
+            if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                if event.ui_element == but_cb: #Lockdown
+                    if money >= 5000:
+                        print('Lockdown Started!');
+                        money -= 5000;
+                        vel=[[0,0] for i in range(n)];
+                        a = 0; #Lockdown: loss of income
+                    else:
+                        print('Not enough money!!!')
     
     pygame.display.update();
     
