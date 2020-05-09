@@ -14,6 +14,7 @@ r=5;
 x_vel=[0 for i in range(n)];
 y_vel=[0 for i in range(n)];
 cluster=[[x_center+random.randrange(-100, 100), y_center+random.randrange(-100, 100)] for i in range(n)];
+
 money=10000;
 
 x_vel=50;
@@ -125,9 +126,12 @@ while run:
         if event.type == pygame.USEREVENT:
             if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
                 if event.ui_element == but_cb:
-                    print('Lockdown Started!');
-                    money -= 5000;
-                    vel=[[0,0] for i in range(n)];
+                    if money > 5000:
+                        print('Lockdown Started!');
+                        money -= 5000;
+                        vel=[[0,0] for i in range(n)];
+                    else:
+                        print('Not enough money!!!')
 
 
     manager.update(time_delta)
