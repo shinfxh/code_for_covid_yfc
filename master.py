@@ -16,6 +16,7 @@ y_vel=[0 for i in range(n)];
 cluster=[[x_center+random.randrange(-100, 100), y_center+random.randrange(-100, 100)] for i in range(n)];
 
 money=10000;
+a=1;
 
 x_vel=50;
 y_vel=50;
@@ -160,6 +161,7 @@ while run:
                         print('Lockdown Started!');
                         money -= 5000;
                         vel=[[0,0] for i in range(n)];
+                        a = 0;
                     else:
                         print('Not enough money!!!')
 
@@ -169,7 +171,7 @@ while run:
 
     for i in range(n):
         pos=cluster[i];
-        if infected[i]>10:
+        if infected[i]>30:
             pygame.draw.circle(win, (246, 116, 94), (int(pos[0]), int(pos[1])), r);
         else:
             pygame.draw.circle(win, (180, 209, 164), (int(pos[0]), int(pos[1])), r);
@@ -178,6 +180,6 @@ while run:
     but_money = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((350, 25), (80, 25)),text='$'+str(money),manager=manager);
     
     pygame.display.update();
-    money += 10
+    money += 10*a;
 pygame.quit();
 
