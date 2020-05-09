@@ -6,15 +6,18 @@ y_center=250;
 n=100;
 width=50;
 height=50;
-r=10;
+r=5;
 x_vel=[0 for i in range(n)];
 y_vel=[0 for i in range(n)];
 cluster=[[x_center+random.randrange(-100, 100), y_center+random.randrange(-100, 100)] for i in range(n)];
 
 
-x_vel=10;
-y_vel=10;
+x_vel=50;
+y_vel=50;
 dt=0.1;
+
+x_acc=10;
+y_acc=10;
 
 vel=[[random.uniform(-x_vel, x_vel), random.uniform(-y_vel, y_vel)] for i in range(n)];
 cluster=np.array(cluster);
@@ -30,17 +33,19 @@ while run:
     win.fill((0,0,0));
     pygame.time.delay(int(dt*1000));
     
-    vel=[[random.uniform(-x_vel, x_vel), random.uniform(-y_vel, y_vel)] for i in range(n)];
-    vel=np.array(vel);
+    acc=[[random.uniform(-x_acc, x_acc), random.uniform(-y_acc, y_acc)] for i in range(n)];
+    acc=np.array(acc);
     
-    cluster=np.add(cluster, vel);
-    cluster=np.rint(cluster);
+    vel=np.add(vel, acc*dt);
+    
+    cluster=np.add(cluster, vel*dt);
+    cluster_rounded=np.rint(cluster);
     
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run=False;
     
-    for pos in cluster:
+    for pos in cluster_rounded:
         pygame.draw.circle(win, (255, 255, 255), (int(pos[0]), int(pos[1])), r)
     
     pygame.display.update();
