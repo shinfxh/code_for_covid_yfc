@@ -31,6 +31,7 @@ y_acc=10; #y-accleration
 
 #Infection Parameters
 r_infection=10; #Infection Probability (proxy for R0)
+p=0.8; #not getting infected
 incubation=70; #Incubation period in frames
 
 #Intiation of Velocity Array
@@ -45,7 +46,6 @@ infected[first_infection]=1;
 
 time_count=[0 for i in range(n)];
 min_infection_time=5;
-p=0.8; #not getting infected
 
 #PyGame Initiation
 import pygame
@@ -72,16 +72,18 @@ but_title = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((75, 25), (25
 #clicked
 selected=np.array([]);
 selected=selected.astype(int);
-#RUN GAME
+
+##Main loop of game
 run=True;
 while run:
-    
+    #Buttons Actions
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run=False;
 
         manager.process_events(event)
-
+        
+        #Get mouse position
         click = pygame.mouse.get_pressed()
         if click[2]:
             print(pygame.mouse.get_pos())
@@ -90,11 +92,11 @@ while run:
             click_pos = pygame.mouse.get_pos();
             if 65<=click_pos[0]<=430 and 65<=click_pos[1]<=430:
                 distance_list = [distance(i, click_pos) for i in cluster];
-                selected=np.append(selected, distance_list.index(min(distance_list)));
+                selected=np.append(selected, distance_list.index(min(distance_list))); #Select specific individuals
             
         if event.type == pygame.USEREVENT:
             if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
-                if event.ui_element == but_iso:
+                if event.ui_element == but_iso: #Mass Testing
                     print('Tested!');
                     money -= 10;
                     for i in range(n):
@@ -105,7 +107,7 @@ while run:
         
         if event.type == pygame.USEREVENT:
             if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
-                if event.ui_element == but_qua:
+                if event.ui_element == but_qua: #Quarantine
                     print('Quarantined!');
                     for i in selected:
                         cluster=np.delete(cluster, i, axis=0);
@@ -118,21 +120,23 @@ while run:
         
         if event.type == pygame.USEREVENT:
             if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
-                if event.ui_element == but_cb:
+                if event.ui_element == but_cb: #Lockdown
                     if money >= 5000:
                         print('Lockdown Started!');
                         money -= 5000;
                         vel=[[0,0] for i in range(n)];
-                        a = 0;
+                        a = 0; #Lockdown: loss of income
                     else:
                         print('Not enough money!!!')
                         
     n=len(cluster);
                         
+    #Basic settings
     win.fill((41,42,48));
     pygame.time.delay(int(dt*1000));
     time_delta = clock.tick(60)/1000.0;
     
+    #Randomising Positions and Infection
     acc=[[random.uniform(-x_acc, x_acc), random.uniform(-y_acc, y_acc)] for i in range(n)];
     acc=np.array(acc);
     
@@ -174,10 +178,9 @@ while run:
                 time_count_new[i]=0;
     time_count=[time for time in time_count_new];
     
-                
-    
     vel=np.add(vel, acc*dt);
     
+    #Boundary of the Game
     for i in range(n):
         [x_pos, y_pos]=cluster[i];
         if x_pos<x_center-wall_width or x_pos>x_center+wall_width:
@@ -185,12 +188,10 @@ while run:
         if y_pos<y_center-wall_height or y_pos>y_center+wall_height:
             vel[i,1]*=-1;
         
-        
-    
     cluster=np.add(cluster, vel*dt);
     cluster_rounded=np.rint(cluster);
 
-
+    #Selecting specific individuals
     manager.update(time_delta)
     manager.draw_ui(win)
 
@@ -205,10 +206,11 @@ while run:
     for i in selected:
         target=cluster[i];
         pygame.draw.rect(win, (90,5,238), (target[0] - 20/2,target[1]-20/2, 20, 20), 3)
-    
 
+    #Updating the money
     but_money = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((350, 25), (80, 25)),text='$'+str(money),manager=manager);
     
     pygame.display.update();
-    money += 0*a;
+    
+    money += 0*a; #Income per frame
 pygame.quit();
