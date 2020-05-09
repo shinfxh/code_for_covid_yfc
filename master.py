@@ -84,7 +84,7 @@ while run:
     
     time_count_new=[time for time in time_count];
     for i in range(n):
-        if infected[i]==1:
+        if infected[i]:
             index=indices_reference[i];
             index_right=index+1;
             index_left=index-1;
@@ -100,6 +100,8 @@ while run:
                 index_left-=1;
                 
     for i in range(n):
+        if infected[i]>0:
+            infected[i]+=1;
         if time_count_new[i]==time_count[i]:
             time_count_new[i]=0;
         elif time_count_new[i]>0:
@@ -167,7 +169,7 @@ while run:
 
     for i in range(n):
         pos=cluster[i];
-        if infected[i]:
+        if infected[i]>10:
             pygame.draw.circle(win, (246, 116, 94), (int(pos[0]), int(pos[1])), r);
         else:
             pygame.draw.circle(win, (180, 209, 164), (int(pos[0]), int(pos[1])), r);
