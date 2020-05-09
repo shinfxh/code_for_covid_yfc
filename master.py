@@ -226,8 +226,11 @@ while run:
     box_death = pygame_gui.elements.UITextBox(html_text =  '     Dead: 69', relative_rect = pygame.Rect((65, 440-39), (159, 35)), manager = manager)
 
     infected_no = len([i for i in infected if i >= incubation])
-    pygame.draw.circle(win, (246, 116, 94), (455, 196), r)
-    box_infected = pygame_gui.elements.UITextBox(html_text =  '  :{}'.format(infected_no), relative_rect = pygame.Rect((438, 178), (55, 35)), manager = manager)
+    pygame.draw.circle(win, (246, 116, 94), (452, 86), r)
+    box_infected = pygame_gui.elements.UITextBox(html_text =  '  :{}'.format(infected_no), relative_rect = pygame.Rect((436, 68), (65, 35)), manager = manager)
+
+    pygame.draw.circle(win, (180, 209, 164), (452, 86+50), r)
+    box_infected = pygame_gui.elements.UITextBox(html_text =  '  :{}'.format(n-infected_no), relative_rect = pygame.Rect((436, 68+50), (65, 35)), manager = manager)
 
     
 
