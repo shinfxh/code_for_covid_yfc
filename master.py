@@ -148,6 +148,6 @@ while run:
     but_money = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((350, 25), (80, 25)),text='$'+str(money),manager=manager);
     
     pygame.display.update();
-    
+    money += 10
 pygame.quit();
 
