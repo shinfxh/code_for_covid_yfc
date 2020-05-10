@@ -30,7 +30,7 @@ y_acc=10; #y-accleration
 #Infection Parameters
 r_infection=23; #Infection radius (proxy for R0)
 infection_p=0.1; #getting infected (proxy for R0)
-incubation=30; #Incubation period in frames
+incubation=50; #Incubation period in frames
 death_p=0.001; #Death Probability
 death_count=0;
 recover_p=0.1;
@@ -254,6 +254,8 @@ while run:
     acc=[[random.uniform(-x_acc, x_acc), random.uniform(-y_acc, y_acc)] for i in range(n)];
     acc=np.array(acc);
     vel=np.add(vel, acc*dt);
+    if lockdown:
+        vel*= 1-lockdown
     cluster=np.add(cluster, vel*dt);
     for i in range(n):
         [x_pos, y_pos]=cluster[i];
