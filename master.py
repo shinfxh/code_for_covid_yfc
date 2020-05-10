@@ -22,19 +22,19 @@ lockdown=0; #If lockdown is carried out
 #Calculation of Positions
 x_vel=50; #x-velocity
 y_vel=50; #y-velocity
-dt=1/20; #Time interval
+dt=0.1; #Time interval
 
 x_acc=10; #x-accleration
 y_acc=10; #y-accleration
 
 #Infection Parameters
-r_infection=23; #Infection radius (proxy for R0)
+r_infection=30; #Infection radius (proxy for R0)
 infection_p=0.1; #getting infected (proxy for R0)
-incubation=50; #Incubation period in frames
-death_p=0.001; #Death Probability
+incubation=70; #Incubation period in frames
+death_p=0.005; #Death Probability
 death_count=0;
-recover_p=0.1;
-recover_time_min=1000;
+recover_p=0.01;
+recover_time_min=50;
 
 #Intiation of Velocity and position Array
 vel=[[random.uniform(-x_vel, x_vel), random.uniform(-y_vel, y_vel)] for i in range(n)]; 
@@ -49,6 +49,7 @@ quarantine=[0 for i in range(n)];
 quarantine_duration=5; #quarantine for AT LEAST this duration, released only after recovery
 active=[1 for i in range(n)];
 dead=[0 for i in range(n)];
+recovered=[0 for i in range(n)];
 infected_known_count=0;
 infected_total=1;
 death_count=0;
@@ -86,7 +87,7 @@ while run:
     #Basic settings
     win.fill((41,42,48));
     pygame.time.delay(int(dt*1000));
-    time_delta = clock.tick(1/dt)/1000.0;
+    time_delta = clock.tick(60)/1000.0;
     
     #Updating active/dead/selected/quarantine etc. statuses of characters
     for i in range(n):
@@ -106,6 +107,7 @@ while run:
                     quarantine_count-=1;
             elif infected[i]>recover_time_min and random.uniform(0,1)<recover_p:
                 infected[i]=0;
+                recovered[i]=1;
         elif quarantine[i]>quarantine_duration:
             active[i]=1;
             quarantine[i]=0;
@@ -142,10 +144,8 @@ while run:
                         print('Tested!');
                         money -= 500;
                         for i in range(n):
-                            pos=cluster[i];
                             if infected[i]:
                                 infected[i]+=incubation;
-                                pygame.draw.circle(win, (246, 116, 94), (int(pos[0]), int(pos[1])), 10,2);
                     else:
                         print('Not enough money!!!')
         
@@ -170,7 +170,6 @@ while run:
                     if money >= 5000:
                         print('Lockdown Started!');
                         money -= 5000;
-                        vel=[[0,0] for i in range(n)];
                         lockdown = 1; #Lockdown: loss of income
                     else:
                         print('Not enough money!!!')
@@ -193,26 +192,44 @@ while run:
             index_left=index-1;
             while index_right<n and abs(x_sorted[index_right]-x_sorted[i])<r_infection:
                 j=sorted_x_indices[index_right];
-                if distance(cluster[i], cluster[j])<r_infection and infected[j]==0 and active[j]:
+                if distance(cluster[i], cluster[j])<r_infection and infected[j]==0 and active[j] and recovered[i]!=1:
                     if random.uniform(0,1)<infection_p:
                         new_infected[j]=1;
                         infected_total+=1;
                 index_right+=1;
             while index_left>=0 and abs(x_sorted[index_left]-x_sorted[i])<r_infection:
                 j=sorted_x_indices[index_left];
-                if distance(cluster[i], cluster[j])<r_infection and infected[j]==0 and active[j]:
+                if distance(cluster[i], cluster[j])<r_infection and infected[j]==0 and active[j] and recovered[j]!=1:
                     if random.uniform(0,1)<infection_p:
                         new_infected[j]=1;
                         infected_total+=1;
                 index_left-=1;
     infected=new_infected[:];
     
-    #Draw cluster    
+    #Random Motion of Characters
+    acc=[[random.uniform(-x_acc, x_acc), random.uniform(-y_acc, y_acc)] for i in range(n)];
+    acc=np.array(acc);
+    cluster=np.add(cluster, vel*dt);
+    vel=np.add(vel, acc*dt);
+    vel*=not(int(lockdown));
+    for i in range(n):
+        [x_pos, y_pos]=cluster[i];
+        if active[i]==0:
+            cluster[i]=[0, 0];
+        elif x_pos<x_center-wall_width or x_pos>x_center+wall_width:
+            vel[i,0]*=-1;
+        elif y_pos<y_center-wall_height or y_pos>y_center+wall_height:
+            vel[i,1]*=-1; 
+    cluster_rounded=np.rint(cluster);
+    
+            
     for i in range(n):
         pos=cluster[i];
         if active[i]:
             if infected[i]>incubation:
                 pygame.draw.circle(win, (246, 116, 94), (int(pos[0]), int(pos[1])), r);
+            elif recovered[i]:
+                pygame.draw.circle(win, (255, 255, 0), (int(pos[0]), int(pos[1])), r);
             else:
                 pygame.draw.circle(win, (180, 209, 164), (int(pos[0]), int(pos[1])), r);
     
@@ -223,7 +240,7 @@ while run:
     pygame.draw.rect(win,(200,200,200),(wall_width/2-10,wall_width/2-10,520-wall_width,520-wall_width),3);
     
     
-    #Draw additional buttons
+    #Additional_buttons
     element_list = [];
     infected_known_count=len([i for i in infected if i>incubation])
     but_qua_text = pygame_gui.elements.UIButton(relative_rect = pygame.Rect((440-222, 440-39), (219, 35)), text= 'Quarantined:' +str(quarantine_count), manager = manager);
@@ -232,39 +249,21 @@ while run:
     element_list.append(but_death_text);
     but_infected = pygame_gui.elements.UIButton(relative_rect = pygame.Rect((437, 128), (62, 35)), text = '  : '+str(infected_known_count), manager = manager);
     element_list.append(but_infected);
+
+    #Updating the money
     but_money = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((350, 25), (80, 25)),text='$'+str(money),manager=manager);
     element_list.append(but_money);
     
     manager.update(time_delta);
     manager.draw_ui(win);
-
+    
     pygame.draw.circle(win, (246, 116, 94), (450, 146), r);
-
-    #Update window
+    
     pygame.display.update();
     
-    #Kill buttons
     for i in element_list:
         i.kill();
     
-    #Updating the money
-    money += 5*int(not(lockdown)); #Income per frame
+    money += 10*int(not(lockdown)); #Income per frame
     
-    #Random Motion of Characters
-    acc=[[random.uniform(-x_acc, x_acc), random.uniform(-y_acc, y_acc)] for i in range(n)];
-    acc=np.array(acc);
-    vel=np.add(vel, acc*dt);
-    if lockdown:
-        vel*= 1-lockdown
-    cluster=np.add(cluster, vel*dt);
-    for i in range(n):
-        [x_pos, y_pos]=cluster[i];
-        if active[i]==0:
-            cluster[i]=[0, 0];
-        elif x_pos<x_center-wall_width or x_pos>x_center+wall_width:
-            vel[i,0]*=-1;
-        elif y_pos<y_center-wall_height or y_pos>y_center+wall_height:
-            vel[i,1]*=-1; 
-    cluster_rounded=np.rint(cluster);
-
 pygame.quit()
