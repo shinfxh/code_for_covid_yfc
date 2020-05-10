@@ -248,7 +248,7 @@ while run:
         i.kill();
     
     #Updating the money
-    money += 10*int(not(lockdown)); #Income per frame
+    money += 5*int(not(lockdown)); #Income per frame
     
     #Random Motion of Characters
     acc=[[random.uniform(-x_acc, x_acc), random.uniform(-y_acc, y_acc)] for i in range(n)];
