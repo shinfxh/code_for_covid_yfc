@@ -18,6 +18,8 @@ cluster=[[x_center+random.randrange(-100, 100), y_center+random.randrange(-100, 
 #Money Options
 money=100; #Initial money
 lockdown=0; #If lockdown is carried out
+lockdown_time=0;
+lockdown_time_max=5;
 
 #Calculation of Positions
 x_vel=50; #x-velocity
@@ -88,6 +90,13 @@ while run:
     win.fill((41,42,48));
     pygame.time.delay(int(dt*1000));
     time_delta = clock.tick(60)/1000.0;
+    
+    if lockdown:
+        if lockdown_time>lockdown_time_max/dt:
+            lockdown=0;
+            lockdown_time=0;
+        else:
+            lockdown_time+=1;
     
     #Updating active/dead/selected/quarantine etc. statuses of characters
     for i in range(n):
@@ -209,9 +218,8 @@ while run:
     #Random Motion of Characters
     acc=[[random.uniform(-x_acc, x_acc), random.uniform(-y_acc, y_acc)] for i in range(n)];
     acc=np.array(acc);
-    cluster=np.add(cluster, vel*dt);
+    cluster=np.add(cluster, vel*dt*int(not(lockdown)));
     vel=np.add(vel, acc*dt);
-    vel*=not(int(lockdown));
     for i in range(n):
         [x_pos, y_pos]=cluster[i];
         if active[i]==0:
